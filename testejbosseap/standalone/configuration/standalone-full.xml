@@ -1,6 +1,7 @@
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='UTF-8'?>
 
 <server xmlns="urn:jboss:domain:4.1">
+
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
         <extension module="org.jboss.as.connector"/>
@@ -32,6 +33,8 @@
         <extension module="org.wildfly.extension.undertow"/>
         <extension module="org.wildfly.iiop-openjdk"/>
     </extensions>
+
+
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
@@ -81,6 +84,7 @@
             </role-mapping>
         </access-control>
     </management>
+
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:3.0">
             <console-handler name="CONSOLE">
@@ -184,7 +188,6 @@
             </mdb>
             <pools>
                 <bean-instance-pools>
-                    <!-- Automatically configure pools. Alternatively, max-pool-size can be set to a specific value -->
                     <strict-max-pool name="slsb-strict-max-pool" derive-size="from-worker-pools" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
                     <strict-max-pool name="mdb-strict-max-pool" derive-size="from-cpu-count" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
                 </bean-instance-pools>
@@ -262,7 +265,6 @@
             </cache-container>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:iiop-openjdk:1.0">
-            <orb socket-binding="iiop" ssl-socket-binding="iiop-ssl"/>
             <initializers transactions="spec" security="identity"/>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jaxrs:1.0"/>
@@ -304,11 +306,11 @@
         <subsystem xmlns="urn:jboss:domain:messaging-activemq:1.0">
             <server name="default">
                 <security-setting name="#">
-                    <role name="guest" send="true" consume="true" create-non-durable-queue="true" delete-non-durable-queue="true"/>
+                    <role name="guest" delete-non-durable-queue="true" create-non-durable-queue="true" consume="true" send="true"/>
                 </security-setting>
-                <address-setting name="#" dead-letter-address="jms.queue.DLQ" expiry-address="jms.queue.ExpiryQueue" max-size-bytes="10485760" page-size-bytes="2097152" message-counter-history-day-limit="10"/>
-                <http-connector name="http-connector" socket-binding="http" endpoint="http-acceptor"/>
-                <http-connector name="http-connector-throughput" socket-binding="http" endpoint="http-acceptor-throughput">
+                <address-setting name="#" message-counter-history-day-limit="10" page-size-bytes="2097152" max-size-bytes="10485760" expiry-address="jms.queue.ExpiryQueue" dead-letter-address="jms.queue.DLQ"/>
+                <http-connector name="http-connector" endpoint="http-acceptor" socket-binding="http"/>
+                <http-connector name="http-connector-throughput" endpoint="http-acceptor-throughput" socket-binding="http">
                     <param name="batch-delay" value="50"/>
                 </http-connector>
                 <in-vm-connector name="in-vm" server-id="0"/>
@@ -320,9 +322,9 @@
                 <in-vm-acceptor name="in-vm" server-id="0"/>
                 <jms-queue name="ExpiryQueue" entries="java:/jms/queue/ExpiryQueue"/>
                 <jms-queue name="DLQ" entries="java:/jms/queue/DLQ"/>
-                <connection-factory name="InVmConnectionFactory" connectors="in-vm" entries="java:/ConnectionFactory"/>
-                <connection-factory name="RemoteConnectionFactory" connectors="http-connector" entries="java:jboss/exported/jms/RemoteConnectionFactory"/>
-                <pooled-connection-factory name="activemq-ra" transaction="xa" connectors="in-vm" entries="java:/JmsXA java:jboss/DefaultJMSConnectionFactory"/>
+                <connection-factory name="InVmConnectionFactory" entries="java:/ConnectionFactory" connectors="in-vm"/>
+                <connection-factory name="RemoteConnectionFactory" entries="java:jboss/exported/jms/RemoteConnectionFactory" connectors="http-connector"/>
+                <pooled-connection-factory name="activemq-ra" transaction="xa" entries="java:/JmsXA java:jboss/DefaultJMSConnectionFactory" connectors="in-vm"/>
             </server>
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:naming:2.0">
@@ -417,6 +419,7 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:weld:3.0"/>
     </profile>
+
     <interfaces>
         <interface name="management">
             <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
@@ -428,6 +431,7 @@
             <inet-address value="${jboss.bind.address.unsecure:127.0.0.1}"/>
         </interface>
     </interfaces>
+
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>

@@ -1,6 +1,7 @@
-<?xml version="1.0" ?>
+<?xml version='1.0' encoding='UTF-8'?>
 
 <server xmlns="urn:jboss:domain:4.1">
+
     <extensions>
         <extension module="org.jboss.as.clustering.infinispan"/>
         <extension module="org.jboss.as.connector"/>
@@ -29,6 +30,8 @@
         <extension module="org.wildfly.extension.security.manager"/>
         <extension module="org.wildfly.extension.undertow"/>
     </extensions>
+
+
     <management>
         <security-realms>
             <security-realm name="ManagementRealm">
@@ -78,6 +81,7 @@
             </role-mapping>
         </access-control>
     </management>
+
     <profile>
         <subsystem xmlns="urn:jboss:domain:logging:3.0">
             <console-handler name="CONSOLE">
@@ -131,12 +135,12 @@
         <subsystem xmlns="urn:jboss:domain:bean-validation:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:4.0">
             <datasources>
-                <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
-                    <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</connection-url>
-                    <driver>h2</driver>
+                <datasource jta="true" jndi-name="java:/jboss/datasources/TreinamentoDS" pool-name="TreinamentoDS" enabled="true" use-ccm="true">
+                    <connection-url>jdbc:hsqldb:hsql://localhost/treinamentoteste</connection-url>
+                    <driver-class>org.hsqldb.jdbc.JDBCDriver</driver-class>
+                    <driver>hsqldb.jar</driver>
                     <security>
                         <user-name>sa</user-name>
-                        <password>sa</password>
                     </security>
                 </datasource>
                 <drivers>
@@ -177,7 +181,6 @@
             </session-bean>
             <pools>
                 <bean-instance-pools>
-                    <!-- Automatically configure pools. Alternatively, max-pool-size can be set to a specific value -->
                     <strict-max-pool name="slsb-strict-max-pool" derive-size="from-worker-pools" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
                     <strict-max-pool name="mdb-strict-max-pool" derive-size="from-cpu-count" instance-acquisition-timeout="5" instance-acquisition-timeout-unit="MINUTES"/>
                 </bean-instance-pools>
@@ -380,6 +383,7 @@
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:weld:3.0"/>
     </profile>
+
     <interfaces>
         <interface name="management">
             <inet-address value="${jboss.bind.address.management:127.0.0.1}"/>
@@ -388,6 +392,7 @@
             <inet-address value="${jboss.bind.address:127.0.0.1}"/>
         </interface>
     </interfaces>
+
     <socket-binding-group name="standard-sockets" default-interface="public" port-offset="${jboss.socket.binding.port-offset:0}">
         <socket-binding name="management-http" interface="management" port="${jboss.management.http.port:9990}"/>
         <socket-binding name="management-https" interface="management" port="${jboss.management.https.port:9993}"/>
@@ -400,4 +405,5 @@
             <remote-destination host="localhost" port="25"/>
         </outbound-socket-binding>
     </socket-binding-group>
+
 </server>
