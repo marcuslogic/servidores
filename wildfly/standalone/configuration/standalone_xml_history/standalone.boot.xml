@@ -149,11 +149,12 @@
                     </security>
                 </datasource>
                 <datasource jta="true" jndi-name="java:jboss/datasources/TreinamentoDS" pool-name="TreinamentoDS" enabled="true" use-ccm="false">
-                    <connection-url>jdbc:hsqldb:file:/opt/Packages/wildfly/banco/TreinamentoDS</connection-url>
+                    <connection-url>jdbc:hsqldb:file:/home/marcus/Treinamentos/servidores/wildfly/banco/TreinamentoDS</connection-url>
                     <driver-class>org.hsqldb.jdbc.JDBCDriver</driver-class>
                     <driver>hsqldb.jar</driver>
                     <security>
                         <user-name>sa</user-name>
+			<password/>
                     </security>
                 </datasource>
                 <drivers>
